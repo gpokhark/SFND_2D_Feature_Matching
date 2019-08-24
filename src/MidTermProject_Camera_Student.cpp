@@ -75,8 +75,8 @@ int main(int argc, const char *argv[])
 
         // extract 2D keypoints from current image
         std::vector<cv::KeyPoint> keypoints; // create empty feature list for current image
-        // std::string detectorType = "SHITOMASI";
-        std::string detectorType = "HARRIS";
+        // SHITOMASI, HARRIS, FAST, BRISK, ORB, AKAZE, SIFT
+        std::string detectorType = "BRISK";
 
         //// STUDENT ASSIGNMENT
         //// TASK MP.2 -> add the following keypoint detectors in file matching2D.cpp and enable string-based selection based on detectorType
@@ -94,7 +94,7 @@ int main(int argc, const char *argv[])
         // FAST, BRISK, ORB, AKAZE, SIFT
         else
         {
-            detKeypointsModern(keypoints, imgGray, detectorType, false);
+            detKeypointsModern(keypoints, imgGray, detectorType, true);
         }
 
         //// EOF STUDENT ASSIGNMENT
@@ -103,17 +103,31 @@ int main(int argc, const char *argv[])
         //// TASK MP.3 -> only keep keypoints on the preceding vehicle
 
         // only keep keypoints on the preceding vehicle
-        bool bFocusOnVehicle = true;
+        bool bFocusOnVehicle = false;
         cv::Rect vehicleRect(535, 180, 180, 150);
         if (bFocusOnVehicle)
         {
-            // ...
+            for (auto it = keypoints.begin(); it < keypoints.end(); it++)
+            {
+                cv::KeyPoint newKeyPoint;
+                newKeyPoint.pt = cv::Point2f((*it).pt.x, (*it).pt.y);
+                int pointx = newKeyPoint.pt.x;
+                int pointy = newKeyPoint.pt.y;
+                int leftx = vehicleRect.x;
+                int rightx = vehicleRect.x + vehicleRect.width;
+                int topy = vehicleRect.y + vehicleRect.height;
+                int bottomy = vehicleRect.y;
+                if (leftx > pointx || pointx > rightx || pointy > topy || pointy < bottomy)
+                {
+                    keypoints.erase(it);
+                }
+            }
         }
 
         //// EOF STUDENT ASSIGNMENT
 
         // optional : limit number of keypoints (helpful for debugging and learning)
-        bool bLimitKpts = false;
+        bool bLimitKpts = true;
         if (bLimitKpts)
         {
             int maxKeypoints = 50;

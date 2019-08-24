@@ -194,23 +194,43 @@ void detKeypointsHarris(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, bool
 // Detect keypoints using modern detectors FAST, BRISK, ORB, AKAZE, SIFT
 void detKeypointsModern(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, std::string detectorType, bool bVis)
 {
+    double t = (double)cv::getTickCount();
+    cv::Ptr<cv::FeatureDetector> detector;
     if (detectorType.compare("FAST") == 0)
     {
+        detector = cv::FastFeatureDetector::create(30, true, cv::FastFeatureDetector::TYPE_9_16);
     }
     else if (detectorType.compare("BRISK") == 0)
     {
+        detector = cv::BRISK::create();
     }
     else if (detectorType.compare("ORB") == 0)
     {
+        detector = cv::BRISK::create();
     }
     else if (detectorType.compare("AKAZE") == 0)
     {
+        detector = cv::AKAZE::create();
     }
     else if (detectorType.compare("SIFT") == 0)
     {
+        detector = cv::xfeatures2d::SIFT::create();
     }
     else
     {
         std::cout << "Invalid keypoints detector.\n";
+    }
+    detector->detect(img, keypoints);
+    t = ((double)cv::getTickCount() - t) / cv::getTickFrequency();
+    std::cout << detectorType << " detection with n = " << keypoints.size() << " keypoint in " << 1000 * t / 1.0 << " ms.\n";
+    // visualize results
+    if (bVis)
+    {
+        cv::Mat visImage = img.clone();
+        cv::drawKeypoints(img, keypoints, visImage, cv::Scalar::all(-1), cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+        std::string windowName = detectorType + " Corner Detector Results";
+        cv::namedWindow(windowName, 6);
+        imshow(windowName, visImage);
+        cv::waitKey(0);
     }
 }
