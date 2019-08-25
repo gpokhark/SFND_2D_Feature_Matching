@@ -168,7 +168,7 @@ int main(int argc, const char *argv[])
 
             std::vector<cv::DMatch> matches;
             std::string matcherType = "MAT_BF";     // MAT_BF, MAT_FLANN
-            std::string descriptorType = "DES_HOG"; // DES_BINARY, DES_HOG
+            std::string descriptorType_HOG_BIN = "DES_HOG"; // DES_BINARY, DES_HOG
             std::string selectorType = "SEL_NN";    // SEL_NN, SEL_KNN
 
             //// STUDENT ASSIGNMENT
@@ -177,7 +177,7 @@ int main(int argc, const char *argv[])
 
             matchDescriptors((dataBuffer.end() - 2)->keypoints, (dataBuffer.end() - 1)->keypoints,
                              (dataBuffer.end() - 2)->descriptors, (dataBuffer.end() - 1)->descriptors,
-                             matches, descriptorType, matcherType, selectorType);
+                             matches, descriptorType_HOG_BIN, matcherType, selectorType);
 
             //// EOF STUDENT ASSIGNMENT
 
@@ -201,7 +201,7 @@ int main(int argc, const char *argv[])
                 cv::namedWindow(windowName, 7);
                 cv::imshow(windowName, matchImg);
                 std::cout << "Press key to continue to next image" << std::endl;
-                cv::waitKey(0); // wait for key to be pressed
+                // cv::waitKey(0); // wait for key to be pressed
             }
             bVis = false;
         }
