@@ -50,7 +50,7 @@ int main(int argc, const char *argv[])
     std::string descriptorType = "BRISK";
 
     // DES_BINARY, DES_HOG
-    std::string descriptorType_HOG_BIN = "DES_HOG";
+    std::string descriptorType_HOG_BIN = "DES_BINARY";
 
     /* MAIN LOOP OVER ALL IMAGES */
 
