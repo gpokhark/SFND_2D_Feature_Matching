@@ -103,7 +103,7 @@ int main(int argc, const char *argv[])
         //// TASK MP.3 -> only keep keypoints on the preceding vehicle
 
         // only keep keypoints on the preceding vehicle
-        bool bFocusOnVehicle = false;
+        bool bFocusOnVehicle = true;
         cv::Rect vehicleRect(535, 180, 180, 150);
         if (bFocusOnVehicle)
         {
@@ -122,12 +122,13 @@ int main(int argc, const char *argv[])
                     keypoints.erase(it);
                 }
             }
+            std::cout << "Focus on vehicle keypoints = " << keypoints.size() << "\n";
         }
 
         //// EOF STUDENT ASSIGNMENT
 
         // optional : limit number of keypoints (helpful for debugging and learning)
-        bool bLimitKpts = true;
+        bool bLimitKpts = false;
         if (bLimitKpts)
         {
             int maxKeypoints = 50;
@@ -166,9 +167,9 @@ int main(int argc, const char *argv[])
             /* MATCH KEYPOINT DESCRIPTORS */
 
             std::vector<cv::DMatch> matches;
-            std::string matcherType = "MAT_BF";        // MAT_BF, MAT_FLANN
+            std::string matcherType = "MAT_BF";     // MAT_BF, MAT_FLANN
             std::string descriptorType = "DES_HOG"; // DES_BINARY, DES_HOG
-            std::string selectorType = "SEL_NN";       // SEL_NN, SEL_KNN
+            std::string selectorType = "SEL_NN";    // SEL_NN, SEL_KNN
 
             //// STUDENT ASSIGNMENT
             //// TASK MP.5 -> add FLANN matching in file matching2D.cpp
@@ -204,6 +205,7 @@ int main(int argc, const char *argv[])
             }
             bVis = false;
         }
+        std::cout << "=======================================\n";
 
     } // eof loop over all images
 

@@ -47,6 +47,7 @@ void matchDescriptors(std::vector<cv::KeyPoint> &kPtsSource, std::vector<cv::Key
             }
         }
     }
+    std::cout << "Number of matched keypoints = " << matches.size() << "\n";
 }
 
 // Use one of several types of state-of-art descriptors to uniquely identify keypoints
