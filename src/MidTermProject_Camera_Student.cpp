@@ -94,7 +94,7 @@ int main(int argc, const char *argv[])
         // FAST, BRISK, ORB, AKAZE, SIFT
         else
         {
-            detKeypointsModern(keypoints, imgGray, detectorType, true);
+            detKeypointsModern(keypoints, imgGray, detectorType, false);
         }
 
         //// EOF STUDENT ASSIGNMENT
