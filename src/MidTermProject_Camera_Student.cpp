@@ -81,7 +81,7 @@ int main(int argc, const char *argv[])
         }
 
         //// EOF STUDENT ASSIGNMENT
-        std::cout << "#1 : LOAD IMAGE INTO BUFFER done" << std::endl;
+        // std::cout << "#1 : LOAD IMAGE INTO BUFFER done" << std::endl;
 
         /* DETECT IMAGE KEYPOINTS */
 
@@ -139,7 +139,7 @@ int main(int argc, const char *argv[])
                     keypoints.erase(it);
                 }
             }
-            std::cout << "Focus on vehicle keypoints = " << keypoints.size() << "\n";
+            // std::cout << "Focus on vehicle keypoints = " << keypoints.size() << "\n";
         }
 
         //// EOF STUDENT ASSIGNMENT
@@ -160,7 +160,7 @@ int main(int argc, const char *argv[])
 
         // push keypoints and descriptor for current frame to end of data buffer
         (dataBuffer.end() - 1)->keypoints = keypoints;
-        std::cout << "#2 : DETECT KEYPOINTS done" << std::endl;
+        // std::cout << "#2 : DETECT KEYPOINTS done" << std::endl;
 
         /* EXTRACT KEYPOINT DESCRIPTORS */
 
@@ -177,7 +177,7 @@ int main(int argc, const char *argv[])
         // push descriptors for current frame to end of data buffer
         (dataBuffer.end() - 1)->descriptors = descriptors;
 
-        std::cout << "#3 : EXTRACT DESCRIPTORS done" << std::endl;
+        // std::cout << "#3 : EXTRACT DESCRIPTORS done" << std::endl;
 
         if (dataBuffer.size() > 1) // wait until at least two images have been processed
         {
@@ -186,7 +186,7 @@ int main(int argc, const char *argv[])
 
             std::vector<cv::DMatch> matches;
             std::string matcherType = "MAT_BF"; // MAT_BF, MAT_FLANN
-            // std::string descriptorType_HOG_BIN = "DES_HOG"; // DES_BINARY, DES_HOG
+            // std::string descriptorType_HOG_BIN = "DES_BINARY"; // DES_BINARY, DES_HOG
             std::string selectorType = "SEL_NN"; // SEL_NN, SEL_KNN
 
             //// STUDENT ASSIGNMENT
@@ -203,7 +203,7 @@ int main(int argc, const char *argv[])
             // store matches in current data frame
             (dataBuffer.end() - 1)->kptMatches = matches;
 
-            std::cout << "#4 : MATCH KEYPOINT DESCRIPTORS done" << std::endl;
+            // std::cout << "#4 : MATCH KEYPOINT DESCRIPTORS done" << std::endl;
 
             // visualize matches between current and previous image
             bVis = false;
@@ -224,7 +224,7 @@ int main(int argc, const char *argv[])
             }
             bVis = false;
         }
-        std::cout << "=======================================\n";
+        // std::cout << "=======================================\n";
         timeTotal += timeDetect + timeDes;
 
     } // eof loop over all images

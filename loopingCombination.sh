@@ -15,7 +15,7 @@ mkdir -p output
 
 detectorType_arr=( SHITOMASI HARRIS FAST BRISK ORB AKAZE SIFT )
 descriptorType_arr=( BRISK BRIEF ORB FREAK AKAZE SIFT )
-detType_HB_arr=( DES_HOG DES_HOG DES_BINARY DES_BINARY DES_BINARY DES_BINARY DES_HOG )
+desType_HB_arr=( DES_BINARY DES_BINARY DES_BINARY DES_BINARY DES_BINARY DES_HOG )
 
 # date and time
 date +"%m-%d-%Y-%r" &>output/output.txt
@@ -34,9 +34,6 @@ for i in "${detectorType_arr[@]}"; do
     if [ ${det_COUNT} -ne 0 ]; then
         # grep -nr "detectorType = \"${detectorType_arr[$((det_COUNT - 1))]}\"\;" # DEBUG
         grep -rl "detectorType = \"${detectorType_arr[$((det_COUNT - 1))]}\"\;" ./src/*.cpp | xargs sed -i "s|detectorType = \"${detectorType_arr[$((det_COUNT - 1))]}\"\;|detectorType = \"$i\"\;|g"
-
-        # grep and sed descriptorType_HOG_BIN
-        grep -rl "descriptorType_HOG_BIN = \"${detType_HB_arr[$((det_COUNT - 1))]}\"\;" ./src/*.cpp | xargs sed -i "s|descriptorType_HOG_BIN = \"${detType_HB_arr[$((det_COUNT - 1))]}\"\;|descriptorType_HOG_BIN = \"${detType_HB_arr[$((det_COUNT))]}\"\;|g"
     fi
     
     #descriptor count
@@ -45,15 +42,18 @@ for i in "${detectorType_arr[@]}"; do
     for j in "${descriptorType_arr[@]}"; do
         echo "********************$COUNT********************"
         echo "********************$COUNT********************" >>output/output.txt
-        # echo "$i-$j-${detType_HB_arr[${det_COUNT}]}-${det_COUNT}-${des_COUNT}.txt" # DEBUG
-        echo "$i-$j-${detType_HB_arr[${det_COUNT}]}-${det_COUNT}-${des_COUNT}.txt" >>output/output.txt
+        # echo "$i-$j-${desType_HB_arr[${det_COUNT}]}-${det_COUNT}-${des_COUNT}.txt" # DEBUG
+        echo "$i-$j-${desType_HB_arr[${des_COUNT}]}-${det_COUNT}-${des_COUNT}.txt" >>output/output.txt
 
         # grep and sed descriptorType
-        # echo "${COUNT} detectorType = \"${detectorType_arr[${det_COUNT}]}\"\; detectorType = \"${descriptorType_arr[$((des_COUNT))]}\"\; descriptorType_HOG_BIN = \"${detType_HB_arr[$((det_COUNT))]}\"\;" # DEBUG
+        # echo "${COUNT} detectorType = \"${detectorType_arr[${det_COUNT}]}\"\; detectorType = \"${descriptorType_arr[$((des_COUNT))]}\"\; descriptorType_HOG_BIN = \"${desType_HB_arr[$((det_COUNT))]}\"\;" # DEBUG
         if [ ${des_COUNT} -ne 0 ]; then
             # grep -nr  "descriptorType = \"${descriptorType_arr[$((des_COUNT - 1))]}\"\;" # DEBUG
             echo $j # DEBUG
             grep -rl  "descriptorType = \"${descriptorType_arr[$((des_COUNT - 1))]}\"\;" ./src/*.cpp | xargs sed -i "s|descriptorType = \"${descriptorType_arr[$((des_COUNT - 1))]}\"\;|descriptorType = \"${descriptorType_arr[$((des_COUNT))]}\"\;|g"
+
+            # grep and sed descriptorType_HOG_BIN
+            grep -rl "descriptorType_HOG_BIN = \"${desType_HB_arr[$((des_COUNT - 1))]}\"\;" ./src/*.cpp | xargs sed -i "s|descriptorType_HOG_BIN = \"${desType_HB_arr[$((des_COUNT - 1))]}\"\;|descriptorType_HOG_BIN = \"${desType_HB_arr[$((des_COUNT))]}\"\;|g"
         fi
 
         # clean, build and run
@@ -68,6 +68,8 @@ for i in "${detectorType_arr[@]}"; do
     des_COUNT=$((des_COUNT - 1))
     grep -rl "descriptorType = \"${descriptorType_arr[${des_COUNT}]}\"\;" ./src/*.cpp | xargs sed -i "s|descriptorType = \"${descriptorType_arr[${des_COUNT}]}\"\;|descriptorType = \"${descriptorType_arr[0]}\"\;|g"
 
+    # grep and sed back to descriptorType_HOG_BIN = "DES_BINARY";
+    grep -rl "descriptorType_HOG_BIN = \"${desType_HB_arr[${des_COUNT}]}\"\;" ./src/*.cpp | xargs sed -i "s|descriptorType_HOG_BIN = \"${desType_HB_arr[${des_COUNT}]}\"\;|descriptorType_HOG_BIN = \"${desType_HB_arr[0]}\"\;|g"
 
     det_COUNT=$((det_COUNT + 1))
 done
@@ -75,8 +77,5 @@ done
 # grep and sed back to detectorType = "SHITOMASI";
 det_COUNT=$((det_COUNT - 1))
 grep -rl "detectorType = \"${detectorType_arr[${det_COUNT}]}\"\;" ./src/*.cpp | xargs sed -i "s|detectorType = \"${detectorType_arr[${det_COUNT}]}\"\;|detectorType = \"${detectorType_arr[0]}\"\;|g"
-
-# grep and sed back to descriptorType_HOG_BIN = "DES_HOG";
-grep -rl "descriptorType_HOG_BIN = \"${detType_HB_arr[$((det_COUNT))]}\"\;" ./src/*.cpp | xargs sed -i "s|descriptorType_HOG_BIN = \"${detType_HB_arr[$((det_COUNT))]}\"\;|descriptorType_HOG_BIN = \"${detType_HB_arr[0]}\"\;|g"
 
 git status
