@@ -51,7 +51,7 @@ void matchDescriptors(std::vector<cv::KeyPoint> &kPtsSource, std::vector<cv::Key
 }
 
 // Use one of several types of state-of-art descriptors to uniquely identify keypoints
-void descKeypoints(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, cv::Mat &descriptors, std::string descriptorType)
+double descKeypoints(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, cv::Mat &descriptors, std::string descriptorType)
 {
     // select appropriate descriptor
     cv::Ptr<cv::DescriptorExtractor> extractor;
@@ -91,10 +91,12 @@ void descKeypoints(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, cv::Mat &
     extractor->compute(img, keypoints, descriptors);
     t = ((double)cv::getTickCount() - t) / cv::getTickFrequency();
     std::cout << descriptorType << " descriptor extraction in " << 1000 * t / 1.0 << " ms" << std::endl;
+
+    return t;
 }
 
 // Detect keypoints in image using the traditional Shi-Thomasi detector
-void detKeypointsShiTomasi(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, bool bVis)
+double detKeypointsShiTomasi(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, bool bVis)
 {
     // compute detector parameters based on image size
     int blockSize = 4;       //  size of an average block for computing a derivative covariation matrix over each pixel neighborhood
@@ -132,10 +134,11 @@ void detKeypointsShiTomasi(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, b
         imshow(windowName, visImage);
         cv::waitKey(0);
     }
+    return t;
 }
 
 // Detect keypoints in image using Harris detector
-void detKeypointsHarris(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, bool bVis)
+double detKeypointsHarris(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, bool bVis)
 {
     // compute detector parameters based on image size
     int blockSize = 4;     // for every pixel, a blockSize x blockSize neighbourhood is considered
@@ -210,10 +213,11 @@ void detKeypointsHarris(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, bool
         imshow(windowName, visImage);
         cv::waitKey(0);
     }
+    return t;
 }
 
 // Detect keypoints using modern detectors FAST, BRISK, ORB, AKAZE, SIFT
-void detKeypointsModern(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, std::string detectorType, bool bVis)
+double detKeypointsModern(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, std::string detectorType, bool bVis)
 {
     double t = (double)cv::getTickCount();
     cv::Ptr<cv::FeatureDetector> detector;
@@ -254,4 +258,5 @@ void detKeypointsModern(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, std:
         imshow(windowName, visImage);
         cv::waitKey(0);
     }
+    return t;
 }

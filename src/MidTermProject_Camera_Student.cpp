@@ -40,6 +40,18 @@ int main(int argc, const char *argv[])
     std::vector<DataFrame> dataBuffer; // list of data frames which are held in memory at the same time
     bool bVis = false;                 // visualize results
 
+    double timeTotal = 0;
+    int keypointTotal = 0;
+    int matchesTotal = 0;
+    // SHITOMASI, HARRIS, FAST, BRISK, ORB, AKAZE, SIFT
+    std::string detectorType = "SHITOMASI";
+
+    // BRISK, BRIEF, ORB, FREAK, AKAZE, SIFT
+    std::string descriptorType = "BRISK";
+
+    // DES_BINARY, DES_HOG
+    std::string descriptorType_HOG_BIN = "DES_HOG";
+
     /* MAIN LOOP OVER ALL IMAGES */
 
     for (size_t imgIndex = 0; imgIndex <= imgEndIndex - imgStartIndex; imgIndex++)
@@ -75,28 +87,27 @@ int main(int argc, const char *argv[])
 
         // extract 2D keypoints from current image
         std::vector<cv::KeyPoint> keypoints; // create empty feature list for current image
-        // SHITOMASI, HARRIS, FAST, BRISK, ORB, AKAZE, SIFT
-        std::string detectorType = "SHITOMASI";
 
         //// STUDENT ASSIGNMENT
         //// TASK MP.2 -> add the following keypoint detectors in file matching2D.cpp and enable string-based selection based on detectorType
         //// -> HARRIS, FAST, BRISK, ORB, AKAZE, SIFT
+        double timeDetect = 0;
 
         if (detectorType.compare("SHITOMASI") == 0)
         {
-            detKeypointsShiTomasi(keypoints, imgGray, false);
+            timeDetect = detKeypointsShiTomasi(keypoints, imgGray, false);
         }
 
         else if (detectorType.compare("HARRIS") == 0)
         {
-            detKeypointsHarris(keypoints, imgGray, false);
+            timeDetect = detKeypointsHarris(keypoints, imgGray, false);
         }
         // FAST, BRISK, ORB, AKAZE, SIFT
         else
         {
-            detKeypointsModern(keypoints, imgGray, detectorType, false);
+            timeDetect = detKeypointsModern(keypoints, imgGray, detectorType, false);
         }
-
+        keypointTotal += keypoints.size();
         //// EOF STUDENT ASSIGNMENT
 
         //// STUDENT ASSIGNMENT
@@ -109,15 +120,21 @@ int main(int argc, const char *argv[])
         {
             for (auto it = keypoints.begin(); it < keypoints.end(); it++)
             {
-                cv::KeyPoint newKeyPoint;
-                newKeyPoint.pt = cv::Point2f((*it).pt.x, (*it).pt.y);
-                int pointx = newKeyPoint.pt.x;
-                int pointy = newKeyPoint.pt.y;
-                int leftx = vehicleRect.x;
-                int rightx = vehicleRect.x + vehicleRect.width;
-                int topy = vehicleRect.y + vehicleRect.height;
-                int bottomy = vehicleRect.y;
-                if (leftx > pointx || pointx > rightx || pointy > topy || pointy < bottomy)
+                // cv::KeyPoint newKeyPoint;
+                // newKeyPoint.pt = cv::Point2f((*it).pt.x, (*it).pt.y);
+                // int pointx = newKeyPoint.pt.x;
+                // int pointy = newKeyPoint.pt.y;
+                // int leftx = vehicleRect.x;
+                // int rightx = vehicleRect.x + vehicleRect.width;
+                // int topy = vehicleRect.y + vehicleRect.height;
+                // int bottomy = vehicleRect.y;
+                // if (leftx > pointx || pointx > rightx || pointy > topy || pointy < bottomy)
+                // {
+                //     keypoints.erase(it);
+                // }
+
+                // remove the kep-point if it is not in the RoI
+                if (!vehicleRect.contains(it->pt))
                 {
                     keypoints.erase(it);
                 }
@@ -152,8 +169,9 @@ int main(int argc, const char *argv[])
         //// -> BRIEF, ORB, FREAK, AKAZE, SIFT
 
         cv::Mat descriptors;
-        std::string descriptorType = "BRISK"; //BRISK, BRIEF, ORB, FREAK, AKAZE, SIFT
-        descKeypoints((dataBuffer.end() - 1)->keypoints, (dataBuffer.end() - 1)->cameraImg, descriptors, descriptorType);
+        double timeDes = 0;
+
+        timeDes = descKeypoints((dataBuffer.end() - 1)->keypoints, (dataBuffer.end() - 1)->cameraImg, descriptors, descriptorType);
         //// EOF STUDENT ASSIGNMENT
 
         // push descriptors for current frame to end of data buffer
@@ -167,9 +185,9 @@ int main(int argc, const char *argv[])
             /* MATCH KEYPOINT DESCRIPTORS */
 
             std::vector<cv::DMatch> matches;
-            std::string matcherType = "MAT_BF";     // MAT_BF, MAT_FLANN
-            std::string descriptorType_HOG_BIN = "DES_HOG"; // DES_BINARY, DES_HOG
-            std::string selectorType = "SEL_NN";    // SEL_NN, SEL_KNN
+            std::string matcherType = "MAT_BF"; // MAT_BF, MAT_FLANN
+            // std::string descriptorType_HOG_BIN = "DES_HOG"; // DES_BINARY, DES_HOG
+            std::string selectorType = "SEL_NN"; // SEL_NN, SEL_KNN
 
             //// STUDENT ASSIGNMENT
             //// TASK MP.5 -> add FLANN matching in file matching2D.cpp
@@ -179,6 +197,7 @@ int main(int argc, const char *argv[])
                              (dataBuffer.end() - 2)->descriptors, (dataBuffer.end() - 1)->descriptors,
                              matches, descriptorType_HOG_BIN, matcherType, selectorType);
 
+            matchesTotal += matches.size();
             //// EOF STUDENT ASSIGNMENT
 
             // store matches in current data frame
@@ -206,8 +225,16 @@ int main(int argc, const char *argv[])
             bVis = false;
         }
         std::cout << "=======================================\n";
+        timeTotal += timeDetect + timeDes;
 
     } // eof loop over all images
+
+    std::cout << "\n**********SUMMARY**********\n";
+    std::cout << detectorType << " + " << descriptorType << " + " << descriptorType_HOG_BIN << "\n";
+    std::cout << "Total number of Key-points = " << keypointTotal << "\n";
+    std::cout << "Total number of Matches = " << matchesTotal << "\n";
+    std::cout << "Total time = " << timeTotal * 1000.0 << " ms \n";
+    std::cout << "Ratio = " << matchesTotal / (timeTotal * 1000.0) << " matches/ms \n";
 
     return 0;
 }
