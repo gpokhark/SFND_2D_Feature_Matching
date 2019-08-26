@@ -18,7 +18,7 @@ descriptorType_arr=( BRISK BRIEF ORB FREAK AKAZE SIFT )
 desType_HB_arr=( DES_BINARY DES_BINARY DES_BINARY DES_BINARY DES_BINARY DES_HOG )
 
 # date and time
-date +"%m-%d-%Y-%r" &>output/output.txt
+date +"%m-%d-%Y-%r" &>output/output.md
 
 # clean project
 ./clean.sh
@@ -40,16 +40,16 @@ for i in "${detectorType_arr[@]}"; do
     des_COUNT=0 
 
     for j in "${descriptorType_arr[@]}"; do
-        echo "********************$COUNT********************"
-        echo "********************$COUNT********************" >>output/output.txt
-        # echo "$i-$j-${desType_HB_arr[${det_COUNT}]}-${det_COUNT}-${des_COUNT}.txt" # DEBUG
-        echo "$i-$j-${desType_HB_arr[${des_COUNT}]}-${det_COUNT}-${des_COUNT}.txt" >>output/output.txt
+        echo -e "\n********************$COUNT********************\n"
+        echo -e "\n********************$COUNT********************\n" >>output/output.md
+        # echo -e "$i-$j-${desType_HB_arr[${det_COUNT}]}-${det_COUNT}-${des_COUNT}.txt" # DEBUG
+        echo -e "\n$i-$j-${desType_HB_arr[${des_COUNT}]}-${det_COUNT}-${des_COUNT}.txt\n" >>output/output.md
 
         # grep and sed descriptorType
-        # echo "${COUNT} detectorType = \"${detectorType_arr[${det_COUNT}]}\"\; detectorType = \"${descriptorType_arr[$((des_COUNT))]}\"\; descriptorType_HOG_BIN = \"${desType_HB_arr[$((det_COUNT))]}\"\;" # DEBUG
+        # echo -e "${COUNT} detectorType = \"${detectorType_arr[${det_COUNT}]}\"\; detectorType = \"${descriptorType_arr[$((des_COUNT))]}\"\; descriptorType_HOG_BIN = \"${desType_HB_arr[$((det_COUNT))]}\"\;" # DEBUG
         if [ ${des_COUNT} -ne 0 ]; then
             # grep -nr  "descriptorType = \"${descriptorType_arr[$((des_COUNT - 1))]}\"\;" # DEBUG
-            echo $j # DEBUG
+            # echo -e $j # DEBUG
             grep -rl  "descriptorType = \"${descriptorType_arr[$((des_COUNT - 1))]}\"\;" ./src/*.cpp | xargs sed -i "s|descriptorType = \"${descriptorType_arr[$((des_COUNT - 1))]}\"\;|descriptorType = \"${descriptorType_arr[$((des_COUNT))]}\"\;|g"
 
             # grep and sed descriptorType_HOG_BIN
@@ -58,7 +58,7 @@ for i in "${detectorType_arr[@]}"; do
 
         # clean, build and run
         ./clean.sh && ./build.sh
-        ./run.sh &>>output/output.txt
+        ./run.sh &>>output/output.md
 
         COUNT=$((COUNT + 1))
         des_COUNT=$((des_COUNT + 1))

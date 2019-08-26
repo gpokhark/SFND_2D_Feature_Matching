@@ -187,7 +187,7 @@ int main(int argc, const char *argv[])
             std::vector<cv::DMatch> matches;
             std::string matcherType = "MAT_BF"; // MAT_BF, MAT_FLANN
             // std::string descriptorType_HOG_BIN = "DES_BINARY"; // DES_BINARY, DES_HOG
-            std::string selectorType = "SEL_NN"; // SEL_NN, SEL_KNN
+            std::string selectorType = "SEL_KNN"; // SEL_NN, SEL_KNN
 
             //// STUDENT ASSIGNMENT
             //// TASK MP.5 -> add FLANN matching in file matching2D.cpp
@@ -228,13 +228,18 @@ int main(int argc, const char *argv[])
         timeTotal += timeDetect + timeDes;
 
     } // eof loop over all images
-
+    /*
     std::cout << "\n**********SUMMARY**********\n";
     std::cout << detectorType << " + " << descriptorType << " + " << descriptorType_HOG_BIN << "\n";
     std::cout << "Total number of Key-points = " << keypointTotal << "\n";
     std::cout << "Total number of Matches = " << matchesTotal << "\n";
     std::cout << "Total time = " << timeTotal * 1000.0 << " ms \n";
     std::cout << "Ratio = " << matchesTotal / (timeTotal * 1000.0) << " matches/ms \n";
+    */
 
+    // Generate output table for README.md 
+    std::cout << "| Detector + Descriptor |" << "Total Keypoints |" << "Total Matches |" << "Total Time (ms) |" << "Ratio (matches/time) |" << "\n";
+    std::cout << "|:---:|:----:|:-----:|:-----:|:-----:|\n";
+    std::cout << "| " << detectorType << " + " << descriptorType << " |" << keypointTotal << " |" << matchesTotal << " |" << timeTotal * 1000.0 << " |" << matchesTotal / (timeTotal * 1000.0) << " |"<< "\n";
     return 0;
 }
